@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Für Kathrin ❤️</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    font-family: Georgia, 'Times New Roman', serif;
+    background: linear-gradient(160deg, #fdf6ee 0%, #fbe8e0 45%, #f6d8cf 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    color: #4a3730;
+  }
+  .card {
+    background: #fffdfa;
+    border-radius: 28px;
+    box-shadow: 0 18px 50px rgba(120, 70, 50, 0.18);
+    padding: 48px 32px 40px;
+    max-width: 420px;
+    width: 100%;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, #f2a29b, #f7c59f, #f2a29b);
+  }
+  .heart { font-size: 40px; margin-bottom: 12px; animation: beat 2.4s ease-in-out infinite; display: inline-block; }
+  @keyframes beat {
+    0%, 100% { transform: scale(1); }
+    12% { transform: scale(1.15); }
+    24% { transform: scale(1); }
+  }
+  h1 { font-size: 30px; font-weight: normal; margin-bottom: 6px; letter-spacing: 0.5px; }
+  .sub { font-size: 16px; color: #a08376; font-style: italic; margin-bottom: 36px; }
+  .msg { margin-bottom: 14px; }
+  .msg-from { font-size: 14px; text-transform: uppercase; letter-spacing: 2px; color: #c29a8a; margin-bottom: 18px; }
+  .play-btn {
+    width: 92px; height: 92px;
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(145deg, #f2a29b, #e5837a);
+    color: #fff;
+    font-size: 34px;
+    cursor: pointer;
+    box-shadow: 0 10px 24px rgba(229, 131, 122, 0.45);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+  .play-btn:active { transform: scale(0.94); }
+  .play-btn.playing { background: linear-gradient(145deg, #e5837a, #d96c62); }
+  .progress-wrap {
+    margin: 26px auto 6px;
+    height: 6px;
+    background: #f3e4dc;
+    border-radius: 3px;
+    overflow: hidden;
+    max-width: 260px;
+    cursor: pointer;
+  }
+  .progress { height: 100%; width: 0%; background: #e5837a; border-radius: 3px; transition: width 0.2s linear; }
+  .time { font-size: 13px; color: #b59a8d; font-variant-numeric: tabular-nums; }
+  .footer { margin-top: 34px; font-size: 13px; color: #c8b3a8; }
+</style>
+</head>
+<body>
+  <main class="card">
+    <span class="heart">❤️</span>
+    <h1>Für Kathrin</h1>
+    <p class="sub">Danke für alles!</p>
+    <div class="msg">
+      <p class="msg-from">Eine Nachricht von Henry</p>
+      <button class="play-btn" id="playBtn" aria-label="Nachricht abspielen">▶</button>
+      <div class="progress-wrap" id="progressWrap"><div class="progress" id="progress"></div></div>
+      <p class="time"><span id="cur">0:00</span> / <span id="dur">0:25</span></p>
+    </div>
+    <p class="footer">Drück auf Play und hör selbst 🎧</p>
+  </main>
+  <audio id="audio" src="../audio/henry-an-kathrin.mp3" preload="metadata"></audio>
+<script>
+  const audio = document.getElementById('audio');
+  const btn = document.getElementById('playBtn');
+  const bar = document.getElementById('progress');
+  const wrap = document.getElementById('progressWrap');
+  const cur = document.getElementById('cur');
+  const dur = document.getElementById('dur');
+  const fmt = s => Math.floor(s/60) + ':' + String(Math.floor(s%60)).padStart(2,'0');
+  audio.addEventListener('loadedmetadata', () => { dur.textContent = fmt(audio.duration); });
+  btn.addEventListener('click', () => {
+    if (audio.paused) { audio.play(); } else { audio.pause(); }
+  });
+  audio.addEventListener('play', () => { btn.textContent = '❚❚'; btn.classList.add('playing'); });
+  audio.addEventListener('pause', () => { btn.textContent = '▶'; btn.classList.remove('playing'); });
+  audio.addEventListener('ended', () => { btn.textContent = '↻'; btn.classList.remove('playing'); bar.style.width = '0%'; });
+  audio.addEventListener('timeupdate', () => {
+    cur.textContent = fmt(audio.currentTime);
+    if (audio.duration) bar.style.width = (audio.currentTime / audio.duration * 100) + '%';
+  });
+  wrap.addEventListener('click', e => {
+    const r = wrap.getBoundingClientRect();
+    if (audio.duration) audio.currentTime = ((e.clientX - r.left) / r.width) * audio.duration;
+  });
+</script>
+</body>
+</html>
